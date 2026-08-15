@@ -1,0 +1,35 @@
+let
+    Source = Excel.Workbook(File.Contents("PATH_TO_FILE\tourism.xlsx"), null, true),
+    main_data_Sheet = Source{[Item="main_data",Kind="Sheet"]}[Data],
+    #"Promoted Headers" = Table.PromoteHeaders(main_data_Sheet, [PromoteAllScalars=true]),
+    #"Changed Type" = Table.TransformColumnTypes(#"Promoted Headers", {
+        {"id", Int64.Type},
+        {"state", type text},
+        {"city", type text},
+        {"destination_name", type text},
+        {"destination_type", type text},
+        {"visitor_count", Int64.Type},
+        {"domestic_visitors", Int64.Type},
+        {"international_visitors", Int64.Type},
+        {"month", type text},
+        {"year", Int64.Type},
+        {"season", type text},
+        {"revenue_in_lakhs", type number},
+        {"average_stay_days", type number},
+        {"hotel_occupancy_rate", type number},
+        {"transport_mode", type text},
+        {"age_group", type text},
+        {"visitor_rating", type number},
+        {"weather_condition", type text},
+        {"entry_fee_inr", Int64.Type},
+        {"accessibility_score", type number}
+    }),
+    #"Replaced Value" = Table.ReplaceValue(
+        #"Changed Type",
+        "Auto-rickshaw",
+        "Rickshaw",
+        Replacer.ReplaceValue,
+        {"transport_mode"}
+    )
+in
+    #"Replaced Value"
